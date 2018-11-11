@@ -1,0 +1,27 @@
+{
+  "name": "cortezx-react-blog",
+  "version": "1.0.0",
+  "description": "blog based on express/mongodb/react/mobx",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config build/webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeppelinn/react-blog-rebuild.git"
+  },
+  "keywords": [
+    "react-blog"
+  ],
+  "author": "lijun",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zeppelinn/react-blog-rebuild/issues"
+  },
+  "homepage": "https://github.com/zeppelinn/react-blog-rebuild#readme",
+  "dependencies": {
+    "react": "^16.6.1",
+    "webpack": "^3.12.0"
+  }
+}
