@@ -33,3 +33,12 @@ npm install babel-eslint eslint-config-airbnb eslint-config-standard eslint-load
 安装husky<br/>
 npm install husky --save-dev<br/>
 同时在package.json中添加git commit钩子 "precommit" 和检查规则"lint"，这样每次执行git commit之前就会先检查代码样式，如果lint失败则无法提交<br/>
+
+优化webpack配置 将相同的配置整合到一起<br/>
+npm install webpack-merge --save-dev<br/>
+
+安装标签图片<br/>
+npm install serve-favicon --save<br/>
+
+守护进程方式开启node<br/>
+npm install nodemon --save-dev<br/>
