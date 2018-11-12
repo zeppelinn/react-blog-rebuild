@@ -20,3 +20,9 @@ npm install cross-env@^5.1.1 --save-dev
 **开发福利 2**
 安装hot module replacement，在页面上无刷新的更新效果       
 npm install react-hot-loader@^3.1.3 --save-dev    
+
+在内存中读写文件     
+npm install memory-fs --save-dev     
+
+express提供的代理中间件    
+npm install http-proxy-middleware --save-dev    
