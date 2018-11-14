@@ -42,3 +42,6 @@ npm install serve-favicon --save<br/>
 
 守护进程方式开启node<br/>
 npm install nodemon --save-dev<br/>
+
+安装babel插件，支持mobx的装饰器写法<br/>
+ npm install babel-plugin-transform-decorators-legacy@^1.3.4 babel-preset-stage-1@^6.24.1 --save-dev<br/>
