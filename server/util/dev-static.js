@@ -65,6 +65,13 @@ module.exports = function (app) {
         const routerContext = {}
         const app = serverBundle(createStoreMap(), routerContext, req.url)
         const content = ReactDomServer.renderToString(app)
+        // 处理服务端渲染时Redirect的问题
+        // 如果前端Router存在Redirect的情况 react-router会给routerContext添加一个url属性
+        // 一定要卸载renderToString之后
+        if(routerContext.url){
+          res.status(302).setHeader('Location', routerContext.url)
+          return res.end()
+        }
         res.send(template.replace('<!-- app -->', content))
       })
   })
