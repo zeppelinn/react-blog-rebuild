@@ -45,3 +45,12 @@ npm install nodemon --save-dev<br/>
 
 安装babel插件，支持mobx的装饰器写法<br/>
  npm install babel-plugin-transform-decorators-legacy@^1.3.4 babel-preset-stage-1@^6.24.1 --save-dev<br/>
+
+安装异步处理模块<br/>
+npm install react-async-bootstrapper@^1.1.2 --save<br/>
+
+安装ejs，使得服务端渲染时异步请求数据产生状态变化后可以修改html模板代码，同步更新客户端页面<br/>
+npm install ejs-compiled-loader@^1.1.0 --save <br/>
+
+安装serialize-javascript，将object序列化<br/>
+npm install serialize-javascript@^1.4.0 --save <br/>

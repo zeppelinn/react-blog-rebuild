@@ -4,14 +4,17 @@ const serverConfig = require('../../build/webpack.config.server')
 const path = require('path')
 const MemoryFileSystem = require('memory-fs')
 const ReactDomServer = require('react-dom/server')
+const ejs = require('ejs')
+const serialize = require('serialize-javascript')
 const proxy = require('http-proxy-middleware')
+const asyncBootstrap = require('react-async-bootstrapper').default
 
 // ！！！开发环境中！！！
 // 由于是使用的webpack-dev-server，所有打包的文件全都保存在内存中
 // 我们没有办法直接读取到template.html，所以就通过http请求来获取
 const getTemplate = () => {
   return new Promise((resolve, reject) => {
-    axios.get('http://localhost:9999/public/index.html')
+    axios.get('http://localhost:9999/public/server.ejs')
       .then(res => {
         resolve(res.data)
       })
@@ -50,6 +53,13 @@ serverCompiler.watch({}, (err, stats) => {
   createStoreMap = m.exports.createStoreMap
 })
 
+const getStoreState = (stores) => {
+  return Object.keys(stores).reduce((result, storeName) => {
+    result[storeName] = stores[storeName].toJson()
+    return result
+  }, {})
+}
+
 module.exports = function (app) {
 
   // 这里需要注意的是，由于使用webpack-dev-server，webpack在开发环境中所打包的所有文件都保存在内存中
@@ -63,16 +73,26 @@ module.exports = function (app) {
     getTemplate()
       .then(template => {
         const routerContext = {}
-        const app = serverBundle(createStoreMap(), routerContext, req.url)
-        const content = ReactDomServer.renderToString(app)
-        // 处理服务端渲染时Redirect的问题
-        // 如果前端Router存在Redirect的情况 react-router会给routerContext添加一个url属性
-        // 一定要卸载renderToString之后
-        if(routerContext.url){
-          res.status(302).setHeader('Location', routerContext.url)
-          return res.end()
-        }
-        res.send(template.replace('<!-- app -->', content))
+        const stores = createStoreMap()
+        const app = serverBundle(stores, routerContext, req.url)
+        asyncBootstrap(app)
+          .then(() => {
+            const content = ReactDomServer.renderToString(app)
+            // 处理服务端渲染时Redirect的问题
+            // 如果前端Router存在Redirect的情况 react-router会给routerContext添加一个url属性
+            // 一定要写在renderToString之后
+            if(routerContext.url){
+              res.status(302).setHeader('Location', routerContext.url)
+              return res.end()
+            }
+            const state = getStoreState(stores)
+            const rendingHtml = ejs.render(template, {
+              appString: content,
+              initialState: serialize(state)
+            })
+            return res.send(rendingHtml)
+            // res.send(template.replace('<!-- app -->', content))
+          })
       })
   })
 }

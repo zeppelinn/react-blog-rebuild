@@ -11,11 +11,18 @@ class TopicList extends React.Component {
   static propTypes = {
     appStore: PropTypes.instanceOf(AppStore).isRequired,
   }
+
+  asyncBootstrap() {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        this.props.appStore.count = 1000
+        resolve(true)
+      }, 1000)
+    })
+  }
+
   componentDidMount() {
     // do somethings
-    setInterval(() => {
-      this.props.appStore.add()
-    }, 1000)
   }
 
   render() {
