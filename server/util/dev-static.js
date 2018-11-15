@@ -8,6 +8,7 @@ const ejs = require('ejs')
 const serialize = require('serialize-javascript')
 const proxy = require('http-proxy-middleware')
 const asyncBootstrap = require('react-async-bootstrapper').default
+const Helmet = require('react-helmet').default
 
 // ！！！开发环境中！！！
 // 由于是使用的webpack-dev-server，所有打包的文件全都保存在内存中
@@ -105,10 +106,15 @@ module.exports = function (app) {
               res.status(302).setHeader('Location', routerContext.url)
               return res.end()
             }
+            const helmet = Helmet.rewind()
             const state = getStoreState(stores)
             const rendingHtml = ejs.render(template, {
               appString: content,
-              initialState: serialize(state)
+              initialState: serialize(state),
+              meta: helmet.meta.toString(),
+              title: helmet.title.toString(),
+              style: helmet.style.toString(),
+              link: helmet.link.toString(),
             })
             return res.send(rendingHtml)
             // res.send(template.replace('<!-- app -->', content))

@@ -4,6 +4,7 @@ import {
   inject,
 } from 'mobx-react'
 import PropTypes from 'prop-types'
+import Helmet from 'react-helmet'
 import AppStore from '../../store/appStore'
 
 @inject('appStore') @observer
@@ -27,7 +28,15 @@ class TopicList extends React.Component {
 
   render() {
     return (
-      <div>{this.props.appStore.msg}</div>
+      <div>
+        <Helmet>
+          <title>
+            This is topList
+          </title>
+          <meta name="description" content="This is description" />
+        </Helmet>
+        <div>{this.props.appStore.msg}</div>
+      </div>
     )
   }
 }

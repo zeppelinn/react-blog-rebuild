@@ -54,3 +54,6 @@ npm install ejs-compiled-loader@^1.1.0 --save <br/>
 
 安装serialize-javascript，将object序列化<br/>
 npm install serialize-javascript@^1.4.0 --save <br/>
+
+安装react-helmet组件，装饰服务端渲染的html的title、meta等标签<br/>
+npm install react-helmet@^5.2.0 --save<br/>
