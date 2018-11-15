@@ -68,3 +68,6 @@ React 16新特性<br/>
 2. New Render Return Type: 支持在render中返回数组或者字符串<br/>
 3. Portals: 使组件可以放在除了根节点之外的地方，比如Modal<br/>
 4. Better Server-side Rendering: 使用流的方式加快要渲染的html页面代码的读取速度等等<br/>
+
+安装name-all-modules-plugin插件，解决webpack打包生成文件名的一些问题<br/>
+npm install name-all-modules-plugin --save-dev <br/>
