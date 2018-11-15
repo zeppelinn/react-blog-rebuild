@@ -71,3 +71,8 @@ React 16新特性<br/>
 
 安装name-all-modules-plugin插件，解决webpack打包生成文件名的一些问题<br/>
 npm install name-all-modules-plugin --save-dev <br/>
+
+## Tips
+在部署之后可能出现即使已经设置当前NODE_ENV为production，但用React Developer Tool检测仍然处于development的环境的问题<br/>
+出现这种问题的一种原因，是因为我们的应用可能引入了一些个人开发的第三方开源插件，而这个插件引用了与我们当前应用的React版本冲突的依赖<br/>
+解决方法是把这个插件的源码直接引入项目中，重新实现一遍，让它的依赖的与我们应用的环境保持一致<br/>
