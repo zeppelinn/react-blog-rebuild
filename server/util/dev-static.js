@@ -3,12 +3,8 @@ const webpack = require('webpack')
 const serverConfig = require('../../build/webpack.config.server')
 const path = require('path')
 const MemoryFileSystem = require('memory-fs')
-const ReactDomServer = require('react-dom/server')
-const ejs = require('ejs')
-const serialize = require('serialize-javascript')
 const proxy = require('http-proxy-middleware')
-const asyncBootstrap = require('react-async-bootstrapper').default
-const Helmet = require('react-helmet').default
+const serverRender = require('./server-render')
 
 // ！！！开发环境中！！！
 // 由于是使用的webpack-dev-server，所有打包的文件全都保存在内存中
@@ -46,7 +42,7 @@ const getModuleFromString = (bundle, filename) => {
 
 const mfs = new MemoryFileSystem()
 const serverCompiler = webpack(serverConfig)
-let serverBundle, createStoreMap
+let serverBundle
 // 指定webpack保存策略采用memory-fs，即保存在内存中
 serverCompiler.outputFileSystem = mfs
 
@@ -70,19 +66,10 @@ serverCompiler.watch({}, (err, stats) => {
   // const m = new Module()
   // m._compile(bundle, 'server-entry.js')
   const m = getModuleFromString(bundle, "server-entry.js")
-  serverBundle = m.exports.default
-  createStoreMap = m.exports.createStoreMap
+  serverBundle = m.exports
 })
 
-const getStoreState = (stores) => {
-  return Object.keys(stores).reduce((result, storeName) => {
-    result[storeName] = stores[storeName].toJson()
-    return result
-  }, {})
-}
-
 module.exports = function (app) {
-
   // 这里需要注意的是，由于使用webpack-dev-server，webpack在开发环境中所打包的所有文件都保存在内存中
   // 所以不像server.js中可以使用express.static来区别静态文件(因为根本没有写到硬盘里)
   // 所以这里使用http-proxy-middleware来做代理找到对应的文件（/public前缀）
@@ -90,35 +77,11 @@ module.exports = function (app) {
     target: "http://localhost:9999"
   }))
 
-  app.get("*", function (req, res) {
+  app.get("*", function (req, res, next) {
     getTemplate()
       .then(template => {
-        const routerContext = {}
-        const stores = createStoreMap()
-        const app = serverBundle(stores, routerContext, req.url)
-        asyncBootstrap(app)
-          .then(() => {
-            const content = ReactDomServer.renderToString(app)
-            // 处理服务端渲染时Redirect的问题
-            // 如果前端Router存在Redirect的情况 react-router会给routerContext添加一个url属性
-            // 一定要写在renderToString之后
-            if(routerContext.url){
-              res.status(302).setHeader('Location', routerContext.url)
-              return res.end()
-            }
-            const helmet = Helmet.rewind()
-            const state = getStoreState(stores)
-            const rendingHtml = ejs.render(template, {
-              appString: content,
-              initialState: serialize(state),
-              meta: helmet.meta.toString(),
-              title: helmet.title.toString(),
-              style: helmet.style.toString(),
-              link: helmet.link.toString(),
-            })
-            return res.send(rendingHtml)
-            // res.send(template.replace('<!-- app -->', content))
-          })
+        return serverRender(serverBundle, template, req, res)
       })
+      .catch(next)
   })
 }
