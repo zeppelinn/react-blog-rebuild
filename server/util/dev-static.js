@@ -22,7 +22,26 @@ const getTemplate = () => {
   })
 }
 
-const Module = module.constructor
+const NativeModule = require('module')
+const vm = require('vm')
+
+// 执行字符串类型的js代码
+const getModuleFromString = (bundle, filename) => {
+  const m = { exports: {} }
+  // 将js代码字符串转换成代码
+  const wrapper = NativeModule.wrap(bundle)
+  // 执行转换好的代码
+  const script = new vm.Script(wrapper, {
+    filename: filename,
+    displayErrors: true
+  })
+  // 执行代码运行的上下文环境为当前环境
+  const result = script.runInThisContext()
+  // 执行完毕后将需要负载在export上的对象挂到m对象上
+  result.call(m.exports, m.exports, require, m)
+  // 返回m，使调用者可以获取到代码export的部分
+  return m
+}
 
 const mfs = new MemoryFileSystem()
 const serverCompiler = webpack(serverConfig)
@@ -47,8 +66,9 @@ serverCompiler.watch({}, (err, stats) => {
   // 此时获取到的bundle只是一个js文件的string 所以不能直接把它当做模块来使用
   // 一下方法将bundle内容的字符串读入到module中，就会生成一个真正的bundle模块了
   const bundle = mfs.readFileSync(bundlePath, 'utf-8')
-  const m = new Module()
-  m._compile(bundle, 'server-entry.js')
+  // const m = new Module()
+  // m._compile(bundle, 'server-entry.js')
+  const m = getModuleFromString(bundle, "server-entry.js")
   serverBundle = m.exports.default
   createStoreMap = m.exports.createStoreMap
 })
