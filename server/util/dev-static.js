@@ -78,6 +78,9 @@ module.exports = function (app) {
   }))
 
   app.get("*", function (req, res, next) {
+    if(!serverBundle){
+      return res.send('waiting for compile...')
+    }
     getTemplate()
       .then(template => {
         return serverRender(serverBundle, template, req, res)

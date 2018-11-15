@@ -57,3 +57,14 @@ npm install serialize-javascript@^1.4.0 --save <br/>
 
 安装react-helmet组件，装饰服务端渲染的html的title、meta等标签<br/>
 npm install react-helmet@^5.2.0 --save<br/>
+
+React 16更新内容<br/>
+1. 减少了react+react-dom的大小，在gzipped之后减少了10k左右(30多k)<br/>
+2. 使用Fiber进行了重构<br/>
+3. 增加了很多实用功能<br/>
+
+React 16新特性<br/>
+1. Error Boundary: 在React组件中增加了新的生命周期钩子**componentDidCatch**，该回调传入两个参数error(错误对象)和errorInfo(错误信息)，通过它我们可以捕获React在渲染过程中出现的一些错误。<br/>
+2. New Render Return Type: 支持在render中返回数组或者字符串<br/>
+3. Portals: 使组件可以放在除了根节点之外的地方，比如Modal<br/>
+4. Better Server-side Rendering: 使用流的方式加快要渲染的html页面代码的读取速度等等<br/>
